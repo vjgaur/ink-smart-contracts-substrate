@@ -41,6 +41,16 @@ mod incrementer {
 		pub fn get_mine(&self) -> i32 {
 			self.my_value.get(&self.env().caller()).unwrap_or_default()
 		}
+		#[ink(message)]
+		pub fn inc_mine(&mut self, by: i32) {
+			let caller = self.env().caller();
+			let my_value = self.get_mine();
+			self.my_value.insert(caller, &(my_value + by));
+		}
+		#[ink(message)]
+		pub fn remove_mine(&self) {
+			self.my_value.remove(&self.env().caller())
+		}
 	}
 
 	#[cfg(test)]
@@ -66,6 +76,24 @@ mod incrementer {
 		fn my_value_works() {
 			let contract = Incrementer::new(11);
 			assert_eq!(contract.get(), 11);
+			assert_eq!(contract.get_mine(), 0);
+		}
+		#[ink::test]
+		fn inc_mine_works() {
+			let mut contract = Incrementer::new(11);
+			assert_eq!(contract.get_mine(), 0);
+			contract.inc_mine(5);
+			assert_eq!(contract.get_mine(), 5);
+			contract.inc_mine(5);
+			assert_eq!(contract.get_mine(), 10);
+		}
+		#[ink::test]
+		fn remove_mine_works() {
+			let mut contract = Incrementer::new(11);
+			assert_eq!(contract.get_mine(), 0);
+			contract.inc_mine(5);
+			assert_eq!(contract.get_mine(), 5);
+			contract.remove_mine();
 			assert_eq!(contract.get_mine(), 0);
 		}
 	}
