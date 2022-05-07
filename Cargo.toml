@@ -4,7 +4,8 @@ members = [
     'pallets/template',
     'runtime',
     'flipper',
-    'incrementer'
+    'incrementer',
+    'erc20'
 ]
 [profile.release]
 panic = 'unwind'
